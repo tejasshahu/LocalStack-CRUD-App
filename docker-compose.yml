@@ -1,0 +1,28 @@
+services:
+  localstack:
+    container_name: localstack_main
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,dynamodb,lambda,apigateway
+      - DEBUG=1
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
+  aws-cli-setup:
+    container_name: aws_setup
+    image: amazon/aws-cli
+    depends_on:
+      - localstack
+    environment:
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_REGION=us-east-1
+    # Mount the current directory so the container can access setup_local.sh and the app code
+    volumes:
+      - ./:/aws
+    working_dir: /aws
+    # We use a slight delay to ensure LocalStack is ready before running the script
+    entrypoint: ["/bin/sh", "-c", "sleep 10 && chmod +x setup_local.sh && ./setup_local.sh"]
