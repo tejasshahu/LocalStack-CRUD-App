@@ -32,3 +32,7 @@ A Dockerized Python application using API Gateway, Lambda, S3, and DynamoDB.
 1. Start the application:
    ```bash
    docker-compose up --build
+2. To Run Test cases:
+   ```
+   python3 -m unittest tests/test_handler.py
+   ```
